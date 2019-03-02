@@ -3,29 +3,25 @@ package lab.uro.kitori.samplecoroutine
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import lab.uro.kitori.samplecoroutine.sample.Sample
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
 class MainViewModel(
-        app: Application
+    app: Application
 ) : AndroidViewModel(app), CoroutineScope {
     private val job = SupervisorJob()
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default + job
 
     val textLiveData = MutableLiveData<String>().apply {
         value = "start..."
     }
 
     fun start() {
-        CoroutineScope(coroutineContext).launch {
-            try {
+        launch {
+            runCatching {
                 Timber.d("!!! start... thread= ${Thread.currentThread().name}")
 
                 val sample = Sample()
@@ -37,8 +33,9 @@ class MainViewModel(
 //                sample.sample6() // !!! コメント解除するとここでブロックされる !!!
 
                 Timber.d("!!! ...end")
-            } catch (exception: CancellationException) {
-                Timber.d("!!! cancel parent: $exception")
+            }.onFailure { exception ->
+                if (exception is CancellationException)
+                    Timber.d("!!! cancel parent: $exception")
             }
         }
     }

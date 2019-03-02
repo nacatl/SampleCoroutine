@@ -1,12 +1,6 @@
 package lab.uro.kitori.samplecoroutine.sample
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
 import kotlin.coroutines.coroutineContext
 
@@ -16,12 +10,13 @@ class Sample {
         CoroutineScope(Dispatchers.Default).launch {
             Timber.d("!!! sample 1: thread= ${Thread.currentThread().name}")
 
-            try {
+            runCatching {
                 Timber.d("!!! sample 1 wait...")
                 delay(10_000)
                 Timber.d("!!! sample 1 end")
-            } catch (exception: CancellationException) {
-                Timber.d("!!! sample 1 cancel: $exception")
+            }.onFailure { exception ->
+                if (exception is CancellationException)
+                    Timber.d("!!! sample 1 cancel: $exception")
             }
         }
     }
@@ -31,12 +26,13 @@ class Sample {
         GlobalScope.launch {
             Timber.d("!!! sample 2: thread= ${Thread.currentThread().name}")
 
-            try {
+            runCatching {
                 Timber.d("!!! sample 2 wait...")
                 delay(10_000)
                 Timber.d("!!! sample 2 end")
-            } catch (exception: CancellationException) {
-                Timber.d("!!! sample 2 cancel: $exception")
+            }.onFailure { exception ->
+                if (exception is CancellationException)
+                    Timber.d("!!! sample 2 cancel: $exception")
             }
         }
     }
@@ -46,12 +42,13 @@ class Sample {
         CoroutineScope(coroutineContext + Dispatchers.Default).launch {
             Timber.d("!!! sample 3: thread= ${Thread.currentThread().name}")
 
-            try {
+            runCatching {
                 Timber.d("!!! sample 3 wait...")
                 delay(10_000)
                 Timber.d("!!! sample 3 end")
-            } catch (exception: CancellationException) {
-                Timber.d("!!! sample 3 cancel: $exception")
+            }.onFailure { exception ->
+                if (exception is CancellationException)
+                    Timber.d("!!! sample 3 cancel: $exception")
             }
         }
     }
@@ -61,12 +58,13 @@ class Sample {
         GlobalScope.launch(coroutineContext + Dispatchers.IO) {
             Timber.d("!!! sample 4: thread= ${Thread.currentThread().name}")
 
-            try {
+            runCatching {
                 Timber.d("!!! sample 4 wait...")
                 delay(10_000)
                 Timber.d("!!! sample 4 end")
-            } catch (exception: CancellationException) {
-                Timber.d("!!! sample 4 cancel: $exception")
+            }.onFailure { exception ->
+                if (exception is CancellationException)
+                    Timber.d("!!! sample 4 cancel: $exception")
             }
         }
     }
@@ -76,12 +74,13 @@ class Sample {
         GlobalScope.launch(Dispatchers.Default + coroutineContext) {
             Timber.d("!!! sample 5: thread= ${Thread.currentThread().name}")
 
-            try {
+            runCatching {
                 Timber.d("!!! sample 5 wait...")
                 delay(10_000)
                 Timber.d("!!! sample 5 end")
-            } catch (exception: CancellationException) {
-                Timber.d("!!! sample 5 cancel: $exception")
+            }.onFailure { exception ->
+                if (exception is CancellationException)
+                    Timber.d("!!! sample 5 cancel: $exception")
             }
         }
     }
@@ -91,13 +90,14 @@ class Sample {
         coroutineScope {
             Timber.d("!!! sample 6: thread= ${Thread.currentThread().name}")
 
-            try {
+            runCatching {
                 Timber.d("!!! sample 6 wait...")
                 // !!! 親そのものなので親が止まる !!!
                 delay(10_000)
                 Timber.d("!!! sample 6 end")
-            } catch (exception: CancellationException) {
-                Timber.d("!!! sample 6 cancel: $exception")
+            }.onFailure { exception ->
+                if (exception is CancellationException)
+                    Timber.d("!!! sample 6 cancel: $exception")
             }
         }
     }
