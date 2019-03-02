@@ -8,24 +8,16 @@ import lab.uro.kitori.samplecoroutine.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProviders.of(this).get(MainViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-
-        binding.cancelButton.setOnClickListener {
-            viewModel.cancel()
-            binding.resultTextView.text = "cancel!!"
-        }
-        binding.cancelChildrenButton.setOnClickListener {
-            viewModel.cancelChildren()
-            binding.resultTextView.text = "cancelChildren!!"
-        }
-
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
         viewModel.start()
-        binding.resultTextView.text = "start..."
     }
 }

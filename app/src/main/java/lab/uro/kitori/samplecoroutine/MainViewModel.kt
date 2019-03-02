@@ -2,6 +2,7 @@ package lab.uro.kitori.samplecoroutine
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,10 @@ class MainViewModel(
 ) : AndroidViewModel(app), CoroutineScope {
     private val job = SupervisorJob()
     override val coroutineContext: CoroutineContext = Dispatchers.Main + job
+
+    val textLiveData = MutableLiveData<String>().apply {
+        value = "start..."
+    }
 
     fun start() {
         CoroutineScope(coroutineContext).launch {
@@ -40,9 +45,11 @@ class MainViewModel(
 
     fun cancel() {
         job.cancel()
+        textLiveData.value = "cancel!!"
     }
 
     fun cancelChildren() {
         job.cancelChildren()
+        textLiveData.value = "cancelChildren!!"
     }
 }
